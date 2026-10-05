@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Calculadora de Nómina con Resumen</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Nómina</h1>
+        
+        <div class="form-group">
+            <label for="tipoPago">Tipo de Pago:</label>
+            <select id="tipoPago">
+                <option value="7">Semanal (7 días)</option>
+                <option value="15">Quincenal (15 días)</option>
+                <option value="30" selected>Mensual (30 días)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="cantidadPago">Cantidad percibida ($):</label>
+            <input type="number" id="cantidadPago" step="0.01" min="0" placeholder="Ej. 5000">
+        </div>
+        
+        <div class="form-group">
+            <label for="jornada">Tipo de Jornada:</label>
+            <select id="jornada">
+                <option value="8" selected>Diurna (8 hrs)</option>
+                <option value="7">Nocturna (7 hrs)</option>
+                <option value="7.5">Mixta (7.5 hrs)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="horasExtras">Horas Extras laboradas:</label>
+            <input type="number" id="horasExtras" min="0" value="0">
+        </div>
+        
+       <div class="form-group">
+    <label for="fechaInicio">Fecha de Inicio:</label>
+    <input type="date" id="fechaInicio">
+</div>
+
+<div class="form-group">
+    <label for="fechaFin">Fecha de Fin:</label>
+    <input type="date" id="fechaFin">
+</div>
+        <button onclick="calcularNomina()">Calcular Nómina</button>
+        
+        <div id="resultados" class="hidden">
+            <!-- Cuadro de resumen -->
+            <div class="summary-box">
+                <div class="summary-title">RESUMEN DE NÓMINA</div>
+                <div class="summary-item">
+                    <span class="summary-label">Sueldo Diario (S.D.):</span>
+                    <span class="summary-value" id="resumen-sueldoDiario"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Salario Diario Integrado (S.D.I.):</span>
+                    <span class="summary-value" id="resumen-sdi"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Costo por Hora (C.P.H.):</span>
+                    <span class="summary-value" id="resumen-costoHora"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Horas Extras Dobles:</span>
+                    <span class="summary-value" id="resumen-horasDobles"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Horas Extras Triples:</span>
+                    <span class="summary-value" id="resumen-horasTriples"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Horas Extras:</span>
+                    <span class="summary-value" id="resumen-totalHorasExtras"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Días de Vacaciones:</span>
+                    <span class="summary-value" id="resumen-diasVacaciones"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Vacaciones:</span>
+                    <span class="summary-value" id="resumen-totalVacaciones"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Aguinaldo:</span>
+                    <span class="summary-value" id="resumen-aguinaldo"></span>
+                </div>
+                <div class="summary-item total">
+                    <span class="summary-label">TOTAL A PAGAR:</span>
+                    <span class="summary-value" id="resumen-totalPagar"></span>
+                </div>
+            </div>
+            
+            <!-- Detalles completos -->
+            <h2>Resultados Detallados</h2>
+            
+            <div class="results">
+                <h3>Sueldo Diario</h3>
+                <div class="result-item">
+                    <span class="result-label">Sueldo Diario (S.D.):</span>
+                    <span id="sueldoDiario"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Salario Diario Integrado (S.D.I.):</span>
+                    <span id="sdi"></span>
+                </div>
+            </div>
+            
+            <div class="results">
+                <h3>Costo por Hora</h3>
+                <div class="result-item">
+                    <span class="result-label">Costo por Hora (C.P.H.):</span>
+                    <span id="costoHora"></span>
+                </div>
+            </div>
+            
+            <div class="results">
+                <h3>Horas Extras</h3>
+                <div class="result-item">
+                    <span class="result-label">Horas Extras Dobles (1-9 hrs):</span>
+                    <span id="horasExtrasDobles"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Horas Extras Triples (10+ hrs):</span>
+                    <span id="horasExtrasTriples"></span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="result-label">Total Horas Extras:</span>
+                    <span id="totalHorasExtras"></span>
+                </div>
+            </div>
+            
+            <div class="results">
+                <h3>Vacaciones</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Años de Servicio</th>
+                            <th>Días de Vacaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVacaciones">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+                
+                <div class="result-item">
+                    <span class="result-label">Días de vacaciones:</span>
+                    <span id="diasVacaciones"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Pago por vacaciones:</span>
+                    <span id="pagoVacaciones"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Prima vacacional (25%):</span>
+                    <span id="primaVacacional"></span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="result-label">Total vacaciones:</span>
+                    <span id="totalVacaciones"></span>
+                </div>
+            </div>
+            
+            <div class="results">
+                <h3>Aguinaldo</h3>
+                <div class="result-item">
+                    <span class="result-label">Días de aguinaldo:</span>
+                    <span id="diasAguinaldo"></span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="result-label">Aguinaldo:</span>
+                    <span id="aguinaldo"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <script src="scrip.js"></script>
+</body>
+</html>
